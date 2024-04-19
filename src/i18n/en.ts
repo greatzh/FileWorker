@@ -4,6 +4,9 @@ export default {
         public: 'Public',
         private: 'Private',
         save: 'Save',
+        download: 'Download',
+        delete: 'Delete',
+        copylink: 'Copy Link',
     },
     index: {
         file_channel_title: 'Files',
@@ -22,5 +25,8 @@ export default {
         file: 'Files',
         login: 'Login',
         filemanage: 'File Manage',
+    },
+    alert: {
+        copy_link_success: 'Copy link success',
     }
 }

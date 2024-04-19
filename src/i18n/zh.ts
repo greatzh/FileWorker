@@ -4,6 +4,9 @@ export default {
         public: '公开',
         private: '私有',
         save: '保存',
+        download: '下载',
+        delete: '删除',
+        copylink: '复制链接',
     },
     index: {
         file_channel_title: '文件',
@@ -22,5 +25,8 @@ export default {
         file: '文件',
         login: '登录',
         filemanage: '文件管理',
+    },
+    alert: {
+        copy_link_success: '复制链接成功',
     }
 }

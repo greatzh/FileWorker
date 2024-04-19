@@ -24,6 +24,21 @@ const onDeleteFileClick = async (key?: string) => {
     await DeleteFile(key);
     await refreshFiles();
 };
+
+// 添加解码文件名的方法
+const decodeFileName = (fileName: string) => {
+  return decodeURIComponent(fileName);
+};
+
+// 复制下载链接的方法
+const copyDownloadLink = async (fileKey) => {
+  try {
+    await navigator.clipboard.writeText(`${window.location.origin}/${fileKey}`);
+    alert('Download link copied to clipboard!'); // 实际项目中可能会使用更友好的通知方式
+  } catch (err) {
+    console.error('Failed to copy: ', err);
+  }
+};
 </script>
 
 <template>
@@ -31,14 +46,18 @@ const onDeleteFileClick = async (key?: string) => {
         <h1 class="text-lg">{{ $t("page_title.filemanage") }}</h1>
         <div class="px-4 py-4 max-w-screen-md w-4/5">
             <div v-for="file in uploadedFiles" :key="file.Key"
-                class="w-full flex flex-row items-center mt-4 rounded border-1 border-gray-300 px-2 py-1">
+                class="w-full flex flex-col items-center mt-4 rounded border-1 border-gray-300 px-2 py-1">
                 <div class="w-10 h-10 i-mdi-file-document-outline"></div>
-                <div class="flex flex-col">
-                    <a class="text-lg font-semibold" :href="`/${file.Key}`" target="_blank">{{ file.Key }}</a>
+                <div class="flex flex-col flex-grow">
+                    <a class="text-lg font-semibold file-name" :href="`/${file.Key}`" target="_blank">{{ decodeFileName(file.Key || '') }}</a>
                     <div class="text-sm text-gray">{{ formatBytes(file.Size ?? 0) }}</div>
                 </div>
-                <div class="ml-auto w-6 h-6 i-mdi-trash-can-outline cursor-pointer"
-                    @click="onDeleteFileClick(file.Key)"></div>
+                <div class="flex">
+                    <div class="ml-auto w-6 h-6 i-mdi-trash-can-outline cursor-pointer"
+                        @click="onDeleteFileClick(file.Key)"></div>
+                    <!-- 复制下载链接的按钮 -->
+                    <button @click="copyDownloadLink(file.Key || '')">Copy Link</button>
+                </div>
             </div>
         </div>
     </div>
@@ -51,5 +70,9 @@ body,
     margin: 0;
     padding: 0;
     background-color: #f8f9fa;
+}
+
+.file-name {
+    overflow-wrap: break-word;
 }
 </style>

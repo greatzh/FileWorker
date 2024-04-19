@@ -30,8 +30,8 @@ const decodeFileName = (fileName: string) => {
   return decodeURIComponent(fileName);
 };
 
-// 复制下载链接的方法
-const copyDownloadLink = async (fileKey) => {
+// Specify the type of the parameter as string
+const copyDownloadLink = async (fileKey: string) => {
   try {
     await navigator.clipboard.writeText(`${window.location.origin}/${fileKey}`);
     alert('Download link copied to clipboard!'); // 实际项目中可能会使用更友好的通知方式

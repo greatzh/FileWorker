@@ -52,7 +52,6 @@ const copyDownloadLink = async (fileKey: string) => {
         <div class="px-4 py-4 max-w-screen-md w-4/5">
             <div v-for="file in uploadedFiles" :key="file.Key"
                 class="w-full flex flex-col items-center mt-4 rounded border-1 border-gray-300 px-2 py-1">
-                <div class="w-10 h-10 i-mdi-file-document-outline"></div>
                 <div class="flex flex-col flex-grow">
                     <a class="text-lg font-semibold file-name" :href="`/${file.Key}`" target="_blank" download>{{ decodeFileName(file.Key || '') }}</a>
                     <div class="text-sm text-gray">{{ formatBytes(file.Size ?? 0) }}</div>
@@ -60,13 +59,13 @@ const copyDownloadLink = async (fileKey: string) => {
                 <div class="flex">
                     <!-- 新增下载按钮 -->
                     <a class="ml-auto w-6 h-6 i-mdi-download-outline cursor-pointer"
-                       :href="`/${file.Key}`" download title="{{ $t('common.download') }}"></a>
+                    :href="`/${file.Key}`" download :title="$t('common.download')"></a>
                     <div class="w-6 h-6 i-mdi-trash-can-outline cursor-pointer ml-2"
-                        @click="onDeleteFileClick(file.Key)" title="{{ $t('common.delete') }}"></div>
+                        @click="onDeleteFileClick(file.Key)" :title="$t('common.delete')"></div>
                     <div v-if="tooltipVisible" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black text-white rounded opacity-70 transition-opacity duration-300">{{ $t('alert.copy_link_success')}}</div>                    
                     <!-- 复制下载链接的按钮，并添加左边距 -->
                     <div class="w-6 h-6 i-mdi-link-variant cursor-pointer ml-2"
-                        @click="copyDownloadLink(file.Key || '')" title="{{ $t('common.copylink') }}"></div>
+                        @click="copyDownloadLink(file.Key || '')" :title="$t('common.copylink')"></div>
                 </div>
             </div>
         </div>

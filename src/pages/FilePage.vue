@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { PutFile } from '@/api';
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 import useFileStore from '@/store/file';
 import { formatBytes } from '@/utils/utils';
-import { onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { PutFile } from '@/api';
 
 const fileStore = useFileStore();
 
@@ -21,16 +21,14 @@ interface UploadedFile {
 
 let uploadedFiles: Ref<UploadedFile[]> = ref([]);
 
-const uploadSingle = async (index: number, filename: string, file: File, folderPath: string) => {
-  // 构建包含文件夹路径的完整文件名
-  const fullPath = `${folderPath}/${filename}`;
-  await PutFile(fullPath, file, fileStore.visibility, "file");
+const uploadSingle = async (index: number, filename: string, file: File) => {
+  // 在这里修改filename，加上前缀f/
+  const modifiedFilename = `f/${filename}`;
+  await PutFile(modifiedFilename, file, fileStore.visibility, "file");
   uploadedFiles.value[index - 1].done = true;
 }
-const targetFolder = 'f'; // 指定的目标文件夹
 
 onMounted(() => {
-  // 假设文件上传触发点
   fileUploadInput.value.addEventListener('change', async (event: Event) => {
     const target = event.target as HTMLInputElement;
     const { files } = target;
@@ -38,14 +36,13 @@ onMounted(() => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const index = uploadedFiles.value.push({
-          name: file.name,
+          name: file.name, // 这里也加上前缀f/，以便在UI上正确显示
           size: file.size,
           visibility: fileStore.visibility,
           done: false
         });
         try {
-          // 在调用时传入目标文件夹路径
-          uploadSingle(index, file.name, file, targetFolder);
+          uploadSingle(index, file.name, file);
         } catch (error) {
           console.error(error);
         }
@@ -70,14 +67,13 @@ const onDragEvent = async (event: DragEvent) => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const index = uploadedFiles.value.push({
-          name: file.name,
+          name: `f/${file.name}`, // 同样在这里加上前缀f/
           size: file.size,
           visibility: fileStore.visibility,
           done: false
         });
         try {
-          // Assuming 'targetFolder' is accessible here as well
-          uploadSingle(index, file.name, file, targetFolder); // Now passing 'targetFolder' as the fourth argument
+          uploadSingle(index, file.name, file);
         } catch (error) {
           console.error(error);
         }

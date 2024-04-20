@@ -51,7 +51,6 @@ onMounted(() => {
 })
 
 let filename = ref(getRandomFilename());
-const targetFolder = "c"; // 定义目标文件夹路径
 
 let refreshRandomFileName = () => {
   filename.value = getRandomFilename();
@@ -60,12 +59,10 @@ let refreshRandomFileName = () => {
 const clipStore = useClipStore();
 
 let onSaveBtnClick = async () => {
-  // 将文件名与文件夹路径组合
-  const fullPath = `${targetFolder}/${filename.value}`;
-  await PutFile(fullPath, code.value, clipStore.visibility, "text");
+  await PutFile(filename.value, code.value, clipStore.visibility, "text");
   modified.value = false;
   toast($t("index.save_success"), 'success');
-};
+}
 
 let saveContentKeydown = (e: KeyboardEvent) => {
   if ((e.ctrlKey && e.key === "s") || (e.metaKey && e.key === "s")) {

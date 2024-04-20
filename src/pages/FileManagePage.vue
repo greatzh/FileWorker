@@ -50,7 +50,7 @@ const copyDownloadLink = async (fileKey: string) => {
         <h1 class="text-2xl">{{ $t("page_title.filemanage") }}</h1>
         <div class="p-2 w-11/12">
             <div v-for="file in uploadedFiles" :key="file.Key"
-                class="w-full flex flex-col items-center mt-4 rounded-lg border-1 border-gray-300 p-2 hover:border-gray-900">
+                class="w-full flex flex-col mt-4 rounded-lg border-1 border-gray-300 p-2 hover:border-gray-900">
                 <div class="flex flex-col flex-grow">
                     <a class="text-lg font-semibold file-name" :href="`/${file.Key}`" target="_blank" download>{{ decodeFileName(file.Key || '') }}</a>
                     <div class="text-sm text-gray">{{ formatBytes(file.Size ?? 0) }}</div>

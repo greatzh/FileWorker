@@ -22,9 +22,7 @@ interface UploadedFile {
 let uploadedFiles: Ref<UploadedFile[]> = ref([]);
 
 const uploadSingle = async (index: number, filename: string, file: File) => {
-  // 在这里修改filename，加上前缀f/
-  const modifiedFilename = `f/${filename}`;
-  await PutFile(modifiedFilename, file, fileStore.visibility, "file");
+  await PutFile(filename, file, fileStore.visibility, "file");
   uploadedFiles.value[index - 1].done = true;
 }
 
@@ -36,7 +34,7 @@ onMounted(() => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const index = uploadedFiles.value.push({
-          name: file.name, // 这里也加上前缀f/，以便在UI上正确显示
+          name: file.name,
           size: file.size,
           visibility: fileStore.visibility,
           done: false
@@ -67,7 +65,7 @@ const onDragEvent = async (event: DragEvent) => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const index = uploadedFiles.value.push({
-          name: `f/${file.name}`, // 同样在这里加上前缀f/
+          name: file.name,
           size: file.size,
           visibility: fileStore.visibility,
           done: false

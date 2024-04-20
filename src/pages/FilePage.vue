@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { PutFile } from '@/api';
 import useFileStore from '@/store/file';
 import { formatBytes } from '@/utils/utils';
-import { PutFile } from '@/api';
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 const fileStore = useFileStore();
 
@@ -27,11 +27,10 @@ const uploadSingle = async (index: number, filename: string, file: File, folderP
   await PutFile(fullPath, file, fileStore.visibility, "file");
   uploadedFiles.value[index - 1].done = true;
 }
+const targetFolder = 'f'; // 指定的目标文件夹
 
 onMounted(() => {
   // 假设文件上传触发点
-  const targetFolder = 'f'; // 指定的目标文件夹
-  
   fileUploadInput.value.addEventListener('change', async (event: Event) => {
     const target = event.target as HTMLInputElement;
     const { files } = target;
@@ -77,7 +76,8 @@ const onDragEvent = async (event: DragEvent) => {
           done: false
         });
         try {
-          uploadSingle(index, file.name, file);
+          // Assuming 'targetFolder' is accessible here as well
+          uploadSingle(index, file.name, file, targetFolder); // Now passing 'targetFolder' as the fourth argument
         } catch (error) {
           console.error(error);
         }

@@ -9,10 +9,8 @@ import { useI18n } from 'vue-i18n';
 const { t: $t } = useI18n();
 let uploadedFiles: Ref<_Object[]> = ref([]);
 
-const targetfolder = 'f'; // 指定的目标文件夹
-
 const refreshFiles = async () => {
-    const res = await ListFiles(targetfolder);
+    const res = await ListFiles();
     if (res.Contents) {
         uploadedFiles.value = res.Contents;
     }

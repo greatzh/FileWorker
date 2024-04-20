@@ -21,12 +21,17 @@ interface UploadedFile {
 
 let uploadedFiles: Ref<UploadedFile[]> = ref([]);
 
-const uploadSingle = async (index: number, filename: string, file: File) => {
-  await PutFile(filename, file, fileStore.visibility, "file");
+const uploadSingle = async (index: number, filename: string, file: File, folderPath: string) => {
+  // 构建包含文件夹路径的完整文件名
+  const fullPath = `${folderPath}/${filename}`;
+  await PutFile(fullPath, file, fileStore.visibility, "file");
   uploadedFiles.value[index - 1].done = true;
 }
 
 onMounted(() => {
+  // 假设文件上传触发点
+  const targetFolder = 'f'; // 指定的目标文件夹
+  
   fileUploadInput.value.addEventListener('change', async (event: Event) => {
     const target = event.target as HTMLInputElement;
     const { files } = target;
@@ -40,7 +45,8 @@ onMounted(() => {
           done: false
         });
         try {
-          uploadSingle(index, file.name, file);
+          // 在调用时传入目标文件夹路径
+          uploadSingle(index, file.name, file, targetFolder);
         } catch (error) {
           console.error(error);
         }
@@ -55,9 +61,9 @@ const onDragEvent = async (event: DragEvent) => {
   event.preventDefault();
   event.stopPropagation();
   if (event.type === 'dragover') {
-    fileUploadArea.value.style.border = '2px dashed #000';
+    fileUploadArea.value.style.border = '6px dashed #d0d7de';
   } else {
-    fileUploadArea.value.style.border = '2px dashed #e5e7eb';
+    fileUploadArea.value.style.border = '6px dashed #e5e7eb';
   }
   if (event.type === 'drop') {
     const files = event.dataTransfer?.files;
@@ -95,19 +101,21 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center">
-    <div class="file-area flex flex-col mt-4">
-      <div class="files" @click="requestUploadFile" ref="fileUploadArea">
+  <div class="items-center max-w-full my-[15vw] mx-auto px-[8vw]">
+    <div class="file-area flex flex-col mt-8 mx-auto">
+      <div class="files hover:border-gray-900" @click="requestUploadFile" ref="fileUploadArea">
         <input ref="fileUploadInput" type="file" class="hidden" multiple />
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 384 512"><path d="M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z"/></svg>
+        <p class="text-xl">{{ $t("index.clicktoupload") }}</p>
       </div>
-      <div class="footer p-2">
+      <div class="footer p-2 mx-auto rounded-md">
         <select class="public-select" v-model="fileStore.visibility">
           <option value="private">{{ $t('common.private') }}</option>
           <option value="public">{{ $t('common.public') }}</option>
         </select>
       </div>
     </div>
-    <div class="px-4 py-4 max-w-screen-md w-4/5">
+    <div class="px-4 py-4 max-w-screen-md w-11/12 mx-auto">
       <a v-for="file in uploadedFiles" :key="file.name" class="w-full flex flex-row items-center mt-4"
         :href="`/${file.name}`" target="_blank">
         <div class="w-10 h-10 i-mdi-file-document-outline"></div>
@@ -130,36 +138,19 @@ body,
   background-color: #f8f9fa;
 }
 
-.pannel {
-  --uno: my-6 px-4 py-4 max-w-screen-md w-4/5 rounded shadow-md;
-}
 
 .tips-pannel {
   background-color: #d1e7dd;
 }
 
-.file-area {
-  --uno: rounded max-w-screen-md w-4/5 border-1 border-gray-300;
-  background-color: white;
-}
-
-.file-area .header {
-  background-color: #f5f5f5;
-}
-
-.file-area .footer {
-  --uno: flex flex-row;
-  background-color: #f5f5f5;
-}
-
 .file-area .footer .public-select {
-  --uno: border-1 rounded px-6 py-1.5 text-sm;
+  --uno: border-1 rounded-md p-2 text-sm;
   border-color: #d1d1d1;
   outline-color: #0969da;
 }
 
 .file-area .footer .save-btn {
-  --uno: rounded px-6 py-1.5 text-sm ml-auto text-white;
+  --uno: rounded-md px-6 py-1.5 text-sm ml-auto text-white;
   background-color: #1f883d;
 }
 
@@ -167,16 +158,14 @@ body,
   background-color: #1a7f37;
 }
 
-.file-area .header .filename-input {
+.file-area .header {
   --uno: border-1 rounded px-3 py-2 text-sm w-60;
   border-color: #d1d1d1;
   outline-color: #0969da;
 }
 
 .files {
-  --uno: h-50 border-dashed border-2 cursor-pointer;
-  background: url(../assets/upload.svg) center center no-repeat;
-  background-color: white;
+  --uno: flex flex-col justify-center items-center h-64 border-solid border-1 border-gray-300 mt-2 p-8 cursor-pointer rounded-lg;
 }
 
 @keyframes spin {

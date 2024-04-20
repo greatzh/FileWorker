@@ -4,12 +4,12 @@ import Toast from 'toastify-js'
 export function toast(message: string, type = 'info') {
   const themes: { [key: string]: any } = {
     info: {
-      background: '#e9e9eb',
+      background: '#000000',
       text: '#909399'
     },
     success: {
-      background: '#d4edda',
-      text: '#67c23a'
+      background: '#000000',
+      text: '#ffffff'
     },
     error: {
       background: '#f8d7da',
@@ -28,7 +28,7 @@ export function toast(message: string, type = 'info') {
       borderRadius: '5px',
       background: theme.background || '#ffffff',
       fontSize: '14px',
-      color: theme.text || '#000000'
+      color: theme.text || '#000000',
     }
   }).showToast()
 }

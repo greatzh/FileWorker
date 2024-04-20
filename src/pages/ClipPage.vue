@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { minimalSetup } from "codemirror"
 import { EditorState } from "@codemirror/state"
-import { EditorView, lineNumbers, highlightSpecialChars, drawSelection, dropCursor } from "@codemirror/view"
+import { EditorView, lineNumbers, highlightSpecialChars, drawSelection, dropCursor, keymap } from "@codemirror/view"
+// 确保导入lineWrapping
+import { defaultKeymap } from "@codemirror/commands"
 
 import { onMounted, onBeforeUnmount, ref } from "vue";
 import useClipStore from "@/store/clip";
 
 import { PutFile } from "@/api";
 import { getRandomFilename } from "@/utils/utils";
+import { toast } from '@/utils/toast'
+import { useI18n } from 'vue-i18n';
 
 const code = ref("");
 const modified = ref(false);
 const editorElement = ref();
+const { t: $t } = useI18n();
 let editor: EditorView;
 
 let startState = EditorState.create({
@@ -21,8 +26,9 @@ let startState = EditorState.create({
     lineNumbers(),
     highlightSpecialChars(),
     drawSelection(),
-    // 文件拖动
     dropCursor(),
+    EditorView.lineWrapping, // 添加这行来启用文本自动换行
+    keymap.of(defaultKeymap),
     EditorView.updateListener.of((update) => {
       code.value = update.state.doc.toString();
       if (update.docChanged) {
@@ -45,6 +51,7 @@ onMounted(() => {
 })
 
 let filename = ref(getRandomFilename());
+const targetFolder = "c"; // 定义目标文件夹路径
 
 let refreshRandomFileName = () => {
   filename.value = getRandomFilename();
@@ -53,9 +60,12 @@ let refreshRandomFileName = () => {
 const clipStore = useClipStore();
 
 let onSaveBtnClick = async () => {
-  await PutFile(filename.value, code.value, clipStore.visibility, "text");
+  // 将文件名与文件夹路径组合
+  const fullPath = `${targetFolder}/${filename.value}`;
+  await PutFile(fullPath, code.value, clipStore.visibility, "text");
   modified.value = false;
-}
+  toast($t("index.save_success"), 'success');
+};
 
 let saveContentKeydown = (e: KeyboardEvent) => {
   if ((e.ctrlKey && e.key === "s") || (e.metaKey && e.key === "s")) {
@@ -91,21 +101,21 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center">
-    <div class="text-area flex flex-col mt-4">
-      <div class="header p-2 flex flex-row items-center">
-        <input class="filename-input monospace" type="text" v-model="filename" :placeholder="$t('common.filename')" />
-        <button @click="refreshRandomFileName" class="i-mdi-refresh ml-1 w-5 h-5"></button>
-        <div :class="modified ? 'unsave-attention' : 'save-attention'"></div>
-      </div>
+  <div class="items-center max-w-full my-[8vw] mx-auto px-[8vw]">
+    <div class="flex flex-row p-2 items-center">
+      <input class="filename-input monospace" type="text" v-model="filename" :placeholder="$t('common.filename')" />
+      <button @click="refreshRandomFileName" class="i-mdi-refresh ml-1 w-5 h-5"></button>
+      <div :class="modified ? 'unsave-attention' : 'save-attention'"></div>
+    </div>
+    <div class="text-area flex flex-col border-gray-900">
       <div ref="editorElement"></div>
-      <div class="footer p-2">
-        <select class="public-select" v-model="clipStore.visibility">
-          <option value="private">{{ $t('common.private') }}</option>
-          <option value="public">{{ $t('common.public') }}</option>
-        </select>
-        <button class="save-btn" @click="onSaveBtnClick">{{ $t('common.save') }}</button>
-      </div>
+    </div>
+    <div class="p-2 flex flex-row items-center mx-auto justify-center">
+      <select class="public-select" v-model="clipStore.visibility">
+        <option value="private">{{ $t('common.private') }}</option>
+        <option value="public">{{ $t('common.public') }}</option>
+      </select>
+      <button class="save-btn" @click="onSaveBtnClick">{{ $t('common.save') }}</button>
     </div>
   </div>
 </template>
@@ -119,53 +129,40 @@ body,
   background-color: #f8f9fa;
 }
 
-.pannel {
-  --uno: my-6 px-4 py-4 max-w-screen-md w-4/5 rounded shadow-md;
-}
 
 .tips-pannel {
   background-color: #d1e7dd;
 }
 
 .text-area {
-  --uno: rounded max-w-screen-md w-4/5 border-1 border-gray-300;
-  background-color: white;
+  --uno: rounded-lg max-w-full border-1 border-gray-300;
 }
 
-.text-area .header {
-  background-color: #f5f5f5;
-}
-
-.text-area .footer {
-  --uno: flex flex-row;
-  background-color: #f5f5f5;
-}
-
-.text-area .footer .public-select {
-  --uno: border-1 rounded px-6 py-1.5 text-sm;
+.public-select {
+  --uno: border-1 rounded-lg px-2 py-1.5 text-sm;
   border-color: #d1d1d1;
   outline-color: #0969da;
 }
 
-.text-area .footer .save-btn {
-  --uno: rounded px-6 py-1.5 text-sm ml-auto text-white;
-  background-color: #1f883d;
+.save-btn {
+  --uno: rounded-lg px-6 py-1.5 text-sm ml-5 text-white;
+  background-color: #434343;
 }
 
-.text-area .footer .save-btn:hover {
-  background-color: #1a7f37;
+.save-btn:hover {
+  background-color: #000000;
 }
 
-.text-area .header .filename-input {
-  --uno: border-1 rounded px-3 py-2 text-sm w-60;
+.filename-input {
+  --uno: border-1 rounded-lg p-2 text-sm w-40;
   border-color: #d1d1d1;
   outline-color: #0969da;
 }
 
 .cm-editor {
-  height: 400px;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+  height: 500px;
+  font-size: large;
+  padding: 8px;
 }
 
 .cm-editor.cm-focused {
@@ -173,7 +170,8 @@ body,
 }
 
 .cm-gutter.cm-lineNumbers {
-  background-color: white;
+  background-color: #f8f9fa;
+  border-radius: 8px;
 }
 
 .cm-gutters {

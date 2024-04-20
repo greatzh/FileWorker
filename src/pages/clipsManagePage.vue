@@ -9,7 +9,7 @@ import { useI18n } from 'vue-i18n';
 const { t: $t } = useI18n();
 let uploadedFiles: Ref<_Object[]> = ref([]);
 
-const targetfolder = 'f'; // 指定的目标文件夹
+const targetfolder = 'c/'; // 指定的目标文件夹
 
 const refreshFiles = async () => {
     const res = await ListFiles(targetfolder);
@@ -49,7 +49,7 @@ const copyDownloadLink = async (fileKey: string) => {
 
 <template>
     <div class="items-center max-w-full my-[15vw] mx-auto px-[8vw]">
-        <h1 class="text-2xl">{{ $t("page_title.filemanage") }}</h1>
+        <h1 class="text-2xl">{{ $t("page_title.clipmanage") }}</h1>
         <div class="p-2 w-11/12">
             <div v-for="file in uploadedFiles" :key="file.Key"
                 class="w-full flex flex-col items-center mt-4 rounded-lg border-1 border-gray-300 p-2 hover:border-gray-900">

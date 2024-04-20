@@ -23,10 +23,10 @@ const onSubmitBtnClick = () => {
 </script>
 
 <template>
-    <div class="cursor-default flex flex-col items-center">
+    <div class="block justify-center max-w-full my-[15vw] mx-auto px-[8vw] break-all">
         <div id="board">
-            <h1 class="text-lg">{{ $t("login.login_title") }}</h1>
-            <input class="my-5 px-2 py-1 w-64 border-2 rounded" type="password" v-model="password"
+            <h1 class="text-3xl">{{ $t("login.login_title") }}</h1>
+            <input class="h-8 my-5 px-2 py-5 w-64 rounded-lg bg-gray-100" type="password" v-model="password"
                 :placeholder="$t('login.password_placeholder')">
             <button id="submit-button" class="btn" @click="onSubmitBtnClick">{{ $t("login.login_button") }}</button>
         </div>
@@ -35,10 +35,10 @@ const onSubmitBtnClick = () => {
 
 <style scoped>
 #board {
-    @apply rounded-lg flex flex-col bg-gray-100 border-2 border-gray-200 my-5 mx-2 p-4 justify-center items-center dark:(bg-dark-100 border-dark-300 text-gray-400);
+    @apply flex flex-col p-4 items-center dark:(bg-dark-100 border-dark-300 text-gray-400);
 }
 
 .btn {
-    @apply rounded cursor-pointer outline-none bg-green-500 text-white text-lg py-1 px-4 transition w-64 hover:bg-green-600;
+    @apply rounded-lg my-3 cursor-pointer outline-none bg-gray-600 text-white text-lg py-1 px-4 transition w-64 hover:bg-gray-900;
 }
 </style>

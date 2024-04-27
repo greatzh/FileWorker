@@ -112,7 +112,6 @@ onUnmounted(() => {
     <div class="px-4 py-4 max-w-screen-md w-11/12 mx-auto">
       <a v-for="file in uploadedFiles" :key="file.name" class="w-full flex flex-row items-center mt-4"
         :href="`/${file.name}`" target="_blank">
-        <div class="w-10 h-10 i-mdi-file-document-outline"></div>
         <div class="flex flex-col">
           <div class="text-lg font-semibold">{{ file.name }}</div>
           <div class="text-sm text-gray">{{ formatBytes(file.size) }} {{ file.visibility }}</div>
